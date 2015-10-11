@@ -11,6 +11,9 @@ include_once('./connection.php');
 $conn = new Connection('localhost', 'ps_api', 'root', '');
 $test = array
 (
-    'post' => 'This is a test'
+    'post' => 'Newest Test',
+    'visible' => 1
+
+
 );
 $conn->executePreparedStatement($conn->insertPrepareStatement('posts', $test));

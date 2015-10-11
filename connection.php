@@ -35,15 +35,36 @@ class Connection {
      */
     function insertPrepareStatement($table, $kvp)
     {
-        try {
-            $prepared = $this->conn->prepare("INSERT INTO $table (".key($kvp).") VALUES(:post)");
-            $prepared->bindParam(":post", $kvp['post']);
+        $prepared_string = 'INSERT INTO '.$table.' (';
+        $bind_params = '';
+        $prepared = null;
 
-            return $prepared;
+        for ($i = 0; $i < count($kvp); $i++) {
+            $prepared_string .= key($kvp);
+            $bind_params .= ':'.key($kvp);
+            if ($i != count($kvp) - 1) {
+                $prepared_string .= ', ';
+                $bind_params .= ', ';
+            }
 
-        } catch (PDOException $e) {
-            echo 'ERROR: '. $prepared->queryString .$e->getMessage();
+            next($kvp);
         }
+        $prepared_string .= ') VALUES('.$bind_params.')';
+        reset($kvp);
+
+        try {
+            // Now bind the parameters to query
+            $prepared = $this->conn->prepare($prepared_string);
+            for ($i = 0; $i < count($kvp); $i++) {
+
+                $prepared->bindParam(':' . key($kvp), $kvp[key($kvp)]);
+                next($kvp);
+            }
+        } catch (PDOException $e) {
+            echo 'ERROR: '. $e->getCode().$e->getMessage();
+        }
+
+        return $prepared;
     }
 
     /**`
