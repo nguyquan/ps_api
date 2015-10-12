@@ -3,13 +3,13 @@
 class Connection {
 
     /* @var $conn PDO  */
-    protected $conn;
+    public static $conn;
     protected $host;
     protected $db;
     protected $user;
     protected $pass;
 
-   // private $prepared;
+    private $prepared;
 
     function __construct($host, $db, $user, $pass)
     {
@@ -18,8 +18,8 @@ class Connection {
         $this->user = $user;
         $this->pass = $pass;
         try {
-            $this->conn = new PDO('mysql:host=' . $host . ';dbname=' . $db . ';', $user, $pass);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$conn = new PDO('mysql:host=' . $host . ';dbname=' . $db . ';', $user, $pass);
+            self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         } catch(PDOException $e) {
             echo 'ERROR: '.$e->getMessage();
@@ -33,7 +33,7 @@ class Connection {
      * @param $kvp Array - Associative An array of columns with corresponding values to be updated/set in the db
      * @return PDOStatement The prepared PDO Statement
      */
-    function insertPrepareStatement($table, $kvp)
+    public function insertPrepareStatement($table, $kvp)
     {
         $prepared_string = 'INSERT INTO '.$table.' (';
         $bind_params = '';
@@ -54,7 +54,8 @@ class Connection {
 
         try {
             // Now bind the parameters to query
-            $prepared = $this->conn->prepare($prepared_string);
+            var_dump(self::$conn);
+            $prepared = self::$conn->prepare($prepared_string);
             for ($i = 0; $i < count($kvp); $i++) {
 
                 $prepared->bindParam(':' . key($kvp), $kvp[key($kvp)]);
@@ -72,7 +73,7 @@ class Connection {
      *
      * @param PDOStatement $prepared
      */
-    function executePreparedStatement(PDOStatement $prepared)
+    public function executePreparedStatement(PDOStatement $prepared)
     {
         $prepared->execute();
     }

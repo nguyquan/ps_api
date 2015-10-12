@@ -1,0 +1,10 @@
+/* line 1, ../sass/style.scss */
+#main p {
+  color: #00ff00;
+  width: 97%;
+}
+/* line 6, ../sass/style.scss */
+#main p .redbox {
+  background-color: #ff0000;
+  color: #000000;
+}
